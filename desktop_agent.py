@@ -179,7 +179,7 @@ def search_web(query: str) -> str:
     subprocess.Popen(f'start "" "{url}"', shell=True)
     return f"✅ Ищу: {query}"
 
-def get_weather(city="Rotterdam") -> str:
+def get_weather(city="Amsterdam") -> str:
     try:
         import urllib.request
         with urllib.request.urlopen(
@@ -220,7 +220,7 @@ SYSTEM = """\
 {"action":"type","text":"текст для ввода"}
 {"action":"volume","cmd":"громче|тише|выкл"}
 {"action":"search","query":"что искать"}
-{"action":"weather","city":"Rotterdam"}
+{"action":"weather","city":"Amsterdam"}
 {"action":"time"}
 {"action":"shell","command":"команда cmd"}
 {"action":"chat","reply":"ответ на обычный вопрос"}
@@ -251,7 +251,7 @@ def route(text: str) -> dict:
 
     # Погода
     if any(w in t for w in ["погода","weather","температура","градус"]):
-        city = "Rotterdam"
+        city = "Amsterdam"
         for c in ["rotterdam","amsterdam","moscow","москва","utrecht","гаага","den haag"]:
             if c in t:
                 city = c.title()
@@ -380,7 +380,7 @@ def execute(cmd: dict) -> str:
         elif a == "type":      return type_text(cmd.get("text",""))
         elif a == "volume":    return control_volume(cmd.get("cmd",""))
         elif a == "search":    return search_web(cmd.get("query",""))
-        elif a == "weather":   return get_weather(cmd.get("city","Rotterdam"))
+        elif a == "weather":   return get_weather(cmd.get("city","Amsterdam"))
         elif a == "time":      return get_time()
         elif a == "shell":     return run_shell(cmd.get("command",""))
         elif a == "chat":      return cmd.get("reply","...")

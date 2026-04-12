@@ -728,7 +728,7 @@ class AgentPro(tk.Tk):
             '"Агент, ctrl+c"         → копирует',
             '"Агент, который час"    → говорит время',
             '"Агент, закрой телеграм"→ Telegram закрывается',
-            '"Агент, найди погода Rotterdam" → открывает Google',
+            '"Агент, найди погода Amsterdam" → открывает Google',
         ]
         for ex in examples:
             tk.Label(ex_f, text=f"  {ex}", bg=BG, fg=TEXT,
