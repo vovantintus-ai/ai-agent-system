@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>AI Assistant</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        async function submitForm(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch('/ask', {
+                method: 'POST',
+                body: formData,
+            });
+            const text = await response.text();
+            document.getElementById('response').innerText = text;
+        }
+    </script>
+</head>
+<body>
+    <div id="chat">
+        <h1>AI Assistant</h1>
+        <form id="chat-form" onsubmit="submitForm(event)">
+            <input type="text" name="user_input" placeholder="Введите ваш вопрос" required>
+            <button type="submit">Отправить</button>
+        </form>
+        <div id="response"></div>
+    </div>
+</body>
+</html>
