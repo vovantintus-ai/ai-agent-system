@@ -1,0 +1,51 @@
+# Deal Hunter configuration example.
+# Copy to config.yaml and edit. Start with the offline "sample" source to see
+# the pipeline work, then add real RSS/Reddit sources.
+
+sources:
+  # 1) Offline demo source (no network) — great for the first run.
+  - type: sample
+
+  # 2) Any RSS/Atom feed. Many classifieds and deal sites publish search feeds.
+  #    Prefer official feeds over scraping HTML.
+  # - type: rss
+  #   name: marktplaats-tools
+  #   url: "https://www.example-classifieds.com/search.rss?q=makita"
+  #   category: tools
+  #   currency: EUR
+
+  # 3) A public subreddit's new listings (buy/sell or deal communities).
+  # - type: reddit
+  #   subreddit: buildapcsales
+  #   category: laptops
+  #   user_agent: "deal-hunter/0.1 (contact: you@example.com)"
+
+# Bonus points when a title contains any of these terms.
+watch_terms:
+  - makita
+  - bosch
+  - urgent
+  - quick sale
+
+# Optional fallback reference prices for thin categories where there are not
+# enough live listings to compute a reliable median.
+baselines:
+  tools: 200
+  laptops: 600
+
+# A listing must be at least this far below the category reference to count.
+min_discount: 0.20   # 20%
+
+# ...and clear this composite score (discount + freshness + keyword bonus).
+min_score: 25.0
+
+# How many priced listings a category needs before a computed median is trusted.
+min_samples: 3
+
+# Cap the digest length.
+max_deals: 25
+
+# Durable state (dedup memory) and digest output. Commit these paths (or point
+# them at Google Drive) so memory survives the ephemeral container.
+state_path: state/seen.json
+output_path: digests/latest.md
