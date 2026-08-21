@@ -1,0 +1,44 @@
+# Config used by the scheduled GitHub Actions run (.github/workflows/deal-hunter.yml).
+# This one IS committed (unlike config.yaml, which is gitignored for local use).
+#
+# It ships with a working public source so the agent produces REAL signals out
+# of the box. Edit `sources` / `baselines` / `watch_terms` to point it at the
+# market you actually care about (a classifieds RSS feed, a local buy/sell sub).
+
+sources:
+  # Public deal community — real listings with prices in the title.
+  # Swap the subreddit (or add an `rss` source) for your own market.
+  - type: reddit
+    subreddit: buildapcsales
+    category: deals
+    user_agent: "deal-hunter/0.1 (github actions; contact via repo)"
+    limit: 75
+
+  # Example RSS source (uncomment and point at a classifieds search feed):
+  # - type: rss
+  #   name: my-classifieds
+  #   url: "https://<site>/search.rss?q=makita"
+  #   category: tools
+
+# Bonus points when a title contains any of these.
+watch_terms:
+  - urgent
+  - "quick sale"
+  - clearance
+  - open box
+
+# Fallback reference prices per category, used when there are not enough
+# comparable live listings to compute a reliable median on their own.
+baselines:
+  deals: 300
+  tools: 200
+
+# Everything below the category reference by at least this much counts.
+min_discount: 0.15
+min_score: 20.0
+min_samples: 5
+max_deals: 20
+
+# Committed back by the workflow so memory + latest digest survive between runs.
+state_path: deal-hunter/state/seen.json
+output_path: deal-hunter/digests/latest.md

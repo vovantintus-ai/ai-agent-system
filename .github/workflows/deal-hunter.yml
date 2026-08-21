@@ -1,0 +1,73 @@
+name: deal-hunter
+
+# Runs the Deal Hunter agent autonomously on GitHub's infrastructure.
+# GitHub-hosted runners have open internet, so the real sources (reddit/rss)
+# work here even though other environments may block them.
+
+on:
+  schedule:
+    # Every 4 hours. Scheduled workflows only trigger on the default branch.
+    - cron: "0 */4 * * *"
+  workflow_dispatch: {}   # allows manual "Run workflow" from the Actions tab
+
+permissions:
+  contents: write   # commit the updated state + digest back
+  issues: write     # open an issue with the new deals (this is the delivery)
+
+concurrency:
+  group: deal-hunter
+  cancel-in-progress: false
+
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deal-hunter
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run agent
+        id: run
+        run: |
+          set -o pipefail
+          summary=$(python run.py --config config.ci.yaml | tee /dev/stderr)
+          new=$(printf '%s\n' "$summary" | grep -oE 'new=[0-9]+' | head -1 | cut -d= -f2)
+          new=${new:-0}
+          echo "new=$new" >> "$GITHUB_OUTPUT"
+          echo "Found $new new deal(s)."
+
+      - name: Commit state and digest
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          git config user.name  "deal-hunter[bot]"
+          git config user.email "actions@github.com"
+          git add deal-hunter/state/seen.json deal-hunter/digests/latest.md || true
+          if git diff --cached --quiet; then
+            echo "No state/digest changes to commit."
+          else
+            git commit -m "chore(deal-hunter): update state and digest [skip ci]"
+            git push
+          fi
+
+      - name: Report new deals as an issue
+        if: steps.run.outputs.new != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          title="Deal Hunter — ${{ steps.run.outputs.new }} new deal(s) $(date -u +'%Y-%m-%d %H:%M UTC')"
+          gh issue create \
+            --title "$title" \
+            --body-file deal-hunter/digests/latest.md \
+            --label deal-hunter 2>/dev/null \
+          || gh issue create --title "$title" --body-file deal-hunter/digests/latest.md
