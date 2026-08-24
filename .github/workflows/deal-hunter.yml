@@ -9,6 +9,13 @@ on:
     # Every 4 hours. Scheduled workflows only trigger on the default branch.
     - cron: "0 */4 * * *"
   workflow_dispatch: {}   # allows manual "Run workflow" from the Actions tab
+  push:
+    branches: [master]
+    # A push touching the agent re-runs it. The bot's own state/digest commit
+    # carries [skip ci], so committing results back never re-triggers a run.
+    paths:
+      - "deal-hunter/**"
+      - ".github/workflows/deal-hunter.yml"
 
 permissions:
   contents: write   # commit the updated state + digest back
