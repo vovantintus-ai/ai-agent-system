@@ -6,19 +6,27 @@
 # market you actually care about (a classifieds RSS feed, a local buy/sell sub).
 
 sources:
-  # Public deal community — real listings with prices in the title.
-  # Swap the subreddit (or add an `rss` source) for your own market.
+  # Demo source — no network, always returns a fixed set of listings so the
+  # full loop (find -> commit -> issue -> email) is demonstrable on every fresh
+  # run. Its deals are deduped after the first delivery. REMOVE this once a real
+  # market feed below is working.
+  - type: sample
+
+  # NOTE: reddit's JSON API blocks datacenter IPs (GitHub runners) without OAuth,
+  # so it usually returns nothing here. Prefer an RSS feed (below) for a real
+  # market — RSS feeds are not IP-blocked the way reddit is.
   - type: reddit
     subreddit: buildapcsales
     category: deals
     user_agent: "deal-hunter/0.1 (github actions; contact via repo)"
     limit: 75
 
-  # Example RSS source (uncomment and point at a classifieds search feed):
+  # Point this at a real classifieds/jobs search feed to hunt your own market
+  # (e.g. Indeed.nl, a marketplace search RSS, TenderNed). Then remove `sample`.
   # - type: rss
-  #   name: my-classifieds
-  #   url: "https://<site>/search.rss?q=makita"
-  #   category: tools
+  #   name: my-market
+  #   url: "https://<site>/search.rss?q=elektricien"
+  #   category: jobs
 
 # Bonus points when a title contains any of these.
 watch_terms:
@@ -40,5 +48,8 @@ min_samples: 5
 max_deals: 20
 
 # Committed back by the workflow so memory + latest digest survive between runs.
-state_path: deal-hunter/state/seen.json
-output_path: deal-hunter/digests/latest.md
+# Paths are relative to the workflow's working-directory (deal-hunter/), so they
+# must NOT be prefixed with deal-hunter/ — the commit step adds the deal-hunter/
+# prefix itself.
+state_path: state/seen.json
+output_path: digests/latest.md
