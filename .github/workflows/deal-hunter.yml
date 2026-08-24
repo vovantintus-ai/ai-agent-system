@@ -66,6 +66,26 @@ jobs:
             git push
           fi
 
+      - name: Notify Telegram
+        if: steps.run.outputs.new != '0'
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # No token in the repo — read from GitHub Secrets. Skip quietly if
+          # the secrets are not set, so the workflow never fails on their absence.
+          if [ -z "$TG_TOKEN" ] || [ -z "$TG_CHAT" ]; then
+            echo "Telegram secrets not set — skipping Telegram notification."
+            exit 0
+          fi
+          text=$(head -c 3500 digests/latest.md)
+          curl -sS -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TG_CHAT}" \
+            --data-urlencode "text=${text}" \
+            -d "disable_web_page_preview=true" >/dev/null \
+            && echo "Sent Telegram notification." \
+            || echo "Telegram send failed (check token / chat_id)."
+
       - name: Report new deals as an issue
         if: steps.run.outputs.new != '0'
         env:
