@@ -1,0 +1,42 @@
+name: get-telegram-chat-id
+
+# Helper: prints the chat id(s) that have messaged your bot, so you can set the
+# TELEGRAM_CHAT_ID secret without fiddling with API URLs.
+#
+# Use once:
+#   1) Add the repo secret TELEGRAM_TOKEN (your fresh BotFather token).
+#   2) In Telegram, open your bot and press Start / send it any message.
+#   3) Actions tab -> "get-telegram-chat-id" -> Run workflow.
+#   4) Read the printed chat id from the log, then add it as the secret
+#      TELEGRAM_CHAT_ID.
+#
+# The token is read from Secrets and never printed.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  chatid:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deal-hunter
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Resolve chat id from getUpdates
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        run: |
+          if [ -z "$TG_TOKEN" ]; then
+            echo "::error::TELEGRAM_TOKEN secret is not set. Add it first."
+            exit 1
+          fi
+          echo "Calling getUpdates..."
+          curl -sS "https://api.telegram.org/bot${TG_TOKEN}/getUpdates" | python3 print_chat_id.py
