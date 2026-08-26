@@ -35,6 +35,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--telegram", action="store_true",
                         help="Send the digest to Telegram (reads TELEGRAM_TOKEN "
                              "and TELEGRAM_CHAT_ID from the environment)")
+    parser.add_argument("--query", default=None,
+                        help="Override the search query for marktplaats/rss/"
+                             "reddit sources (handy on a phone — no file edit)")
     args = parser.parse_args(argv)
 
     try:
@@ -48,6 +51,13 @@ def main(argv: list[str] | None = None) -> int:
 
     sources = []
     for spec in config.sources:
+        if args.query:
+            # Let a phone user change what to hunt without editing the file.
+            spec = dict(spec)
+            if "query" in spec or (spec.get("type") == "marktplaats"):
+                spec["query"] = args.query
+            elif spec.get("type") == "reddit":
+                spec["subreddit"] = args.query
         try:
             sources.append(build_source(spec))
         except Exception as exc:  # noqa: BLE001
