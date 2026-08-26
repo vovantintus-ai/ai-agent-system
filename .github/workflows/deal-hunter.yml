@@ -58,7 +58,7 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           git config user.name  "deal-hunter[bot]"
           git config user.email "actions@github.com"
-          git add deal-hunter/state/seen.json deal-hunter/digests/latest.md || true
+          git add -f deal-hunter/state/seen.json deal-hunter/digests/latest.md || true
           if git diff --cached --quiet; then
             echo "No state/digest changes to commit."
           else

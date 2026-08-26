@@ -7,3 +7,7 @@ venv/
 config.yaml
 config.json
 *.corrupt
+
+# Local run outputs — do not track (prevents pull conflicts on the phone)
+state/
+digests/
