@@ -49,6 +49,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.output:
         config.output_path = args.output
 
+    # Allow ~ and $VARS in paths so runs can write state/digest OUTSIDE the repo
+    # (keeps `git pull` clean on the phone).
+    config.state_path = os.path.expanduser(os.path.expandvars(config.state_path))
+    config.output_path = os.path.expanduser(os.path.expandvars(config.output_path))
+
     sources = []
     for spec in config.sources:
         if args.query:

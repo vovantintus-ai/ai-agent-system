@@ -48,5 +48,6 @@ min_samples: 5
 max_deals: 24
 max_per_category: 6       # show up to 6 per category (phones/laptops/tablets/computers)
 
-state_path: state/seen.json
-output_path: digests/latest.md
+# Written OUTSIDE the repo (in your home dir) so `git pull` never conflicts.
+state_path: ~/deal-hunter-state.json
+output_path: ~/deal-hunter-latest.md
