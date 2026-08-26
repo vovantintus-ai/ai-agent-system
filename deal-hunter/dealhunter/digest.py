@@ -48,7 +48,7 @@ def render_digest(
         price = f"{l.price:.0f} {l.currency}" if l.has_price() else "n/a"
         saving = (
             f" (~{deal.absolute_saving:.0f} {l.currency} below ref)"
-            if deal.absolute_saving > 0
+            if deal.absolute_saving > 0 and deal.score > 0
             else ""
         )
         lines.append(f"## {i}. {l.title}")
@@ -59,11 +59,14 @@ def render_digest(
             if title_ru and title_ru.strip().lower() != l.title.strip().lower():
                 lines.append(f"- 🇷🇺 **Перевод:** {title_ru}")
         lines.append(f"- **Price:** {price}{saving}")
-        lines.append(
-            f"- **Reference:** {deal.reference_price:.0f} {l.currency} "
-            f"· **Discount:** {deal.discount_pct * 100:.0f}% "
-            f"· **Score:** {deal.score:.0f}"
-        )
+        # Discount/score line only makes sense for the deal-scoring mode; in the
+        # "list under a price cap" mode (real estate) it is meaningless, so skip.
+        if deal.score > 0 or deal.discount_pct != 0:
+            lines.append(
+                f"- **Reference:** {deal.reference_price:.0f} {l.currency} "
+                f"· **Discount:** {deal.discount_pct * 100:.0f}% "
+                f"· **Score:** {deal.score:.0f}"
+            )
         if l.location:
             lines.append(f"- **Location:** {l.location}")
         if getattr(l, "condition", ""):

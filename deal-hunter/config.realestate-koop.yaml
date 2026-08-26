@@ -1,0 +1,47 @@
+# Real estate — FOR SALE (koop): apartments & houses at/under EUR 150,000.
+# Areas: Rotterdam (40km), Den Haag (30km), Breda (30km), Utrecht (30km).
+# Source: Marktplaats housing (partial coverage vs Funda/Pararius, which block
+# automation). Run from your phone:
+#   python3 run.py --config config.realestate-koop.yaml --telegram --print
+
+sources:
+  - type: marktplaats
+    query: "koopwoning"
+    category: Rotterdam
+    postcode: "3011"
+    distance_km: 40
+    limit: 60
+  - type: marktplaats
+    query: "koopwoning"
+    category: "Den Haag"
+    postcode: "2511"
+    distance_km: 30
+    limit: 60
+  - type: marktplaats
+    query: "koopwoning"
+    category: Breda
+    postcode: "4811"
+    distance_km: 30
+    limit: 60
+  - type: marktplaats
+    query: "koopwoning"
+    category: Utrecht
+    postcode: "3511"
+    distance_km: 30
+    limit: 60
+
+# List everything at/under this price (no discount logic for real estate).
+max_price: 150000
+
+# Dutch original + Russian translation.
+translate: true
+translate_from: nl
+translate_to: ru
+
+# Fair space per area so one city can't crowd out the others.
+max_per_category: 10
+max_deals: 40
+
+# Written outside the repo so `git pull` never conflicts.
+state_path: ~/re-koop-state.json
+output_path: ~/re-koop-latest.md

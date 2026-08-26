@@ -22,6 +22,7 @@ class Config:
     min_samples: int = 3
     max_deals: int = 25
     max_per_category: int = 0        # 0 = off; N = show up to N deals per category
+    max_price: float = 0.0           # >0 switches to "list everything at/under this price"
     state_path: str = "state/seen.json"
     output_path: str = "digests/latest.md"
     translate: bool = False          # enable free NL->RU translation in the digest

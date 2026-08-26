@@ -57,12 +57,17 @@ def _extract_condition(item: dict) -> str:
 class MarktplaatsSource(Source):
     def __init__(self, query: str, category: str = "marktplaats",
                  limit: int = 30, currency: str = "EUR",
-                 user_agent: Optional[str] = None):
+                 user_agent: Optional[str] = None,
+                 postcode: Optional[str] = None,
+                 distance_km: Optional[int] = None):
         self.query = query
         self.category = category
         self.limit = int(limit)
         self.currency = currency
-        self.name = f"marktplaats:{query}"
+        self.postcode = postcode
+        self.distance_km = int(distance_km) if distance_km else None
+        loc = f"@{postcode}+{distance_km}km" if postcode else ""
+        self.name = f"marktplaats:{query}{loc}"
         self.user_agent = user_agent or (
             "Mozilla/5.0 (compatible; deal-hunter/0.1; personal use)"
         )
@@ -70,9 +75,14 @@ class MarktplaatsSource(Source):
     def fetch(self) -> Iterable[Listing]:
         if requests is None:
             raise RuntimeError("requests is not installed; run `pip install requests`")
+        params = {"query": self.query, "limit": self.limit, "offset": 0}
+        if self.postcode:
+            params["postcode"] = self.postcode
+        if self.distance_km:
+            params["distanceMeters"] = self.distance_km * 1000
         resp = requests.get(
             SEARCH_URL,
-            params={"query": self.query, "limit": self.limit, "offset": 0},
+            params=params,
             headers={"User-Agent": self.user_agent, "Accept": "application/json"},
             timeout=25,
         )

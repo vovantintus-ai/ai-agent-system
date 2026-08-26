@@ -37,5 +37,7 @@ def build_source(spec: dict) -> Source:
             limit=int(spec.get("limit", 30)),
             currency=spec.get("currency", "EUR"),
             user_agent=spec.get("user_agent"),
+            postcode=spec.get("postcode"),
+            distance_km=spec.get("distance_km"),
         )
     raise ValueError(f"Unknown source type: {spec.get('type')!r}")

@@ -1,0 +1,44 @@
+# Real estate — FOR RENT (huur): homes at/under EUR 1,500 / month.
+# Areas: Rotterdam (40km), Den Haag (30km), Breda (30km), Utrecht (30km).
+# Source: Marktplaats housing (partial coverage vs Funda/Pararius, which block
+# automation). Run from your phone:
+#   python3 run.py --config config.realestate-huur.yaml --telegram --print
+
+sources:
+  - type: marktplaats
+    query: "huurwoning"
+    category: Rotterdam
+    postcode: "3011"
+    distance_km: 40
+    limit: 60
+  - type: marktplaats
+    query: "huurwoning"
+    category: "Den Haag"
+    postcode: "2511"
+    distance_km: 30
+    limit: 60
+  - type: marktplaats
+    query: "huurwoning"
+    category: Breda
+    postcode: "4811"
+    distance_km: 30
+    limit: 60
+  - type: marktplaats
+    query: "huurwoning"
+    category: Utrecht
+    postcode: "3511"
+    distance_km: 30
+    limit: 60
+
+# List everything at/under this monthly rent.
+max_price: 1500
+
+translate: true
+translate_from: nl
+translate_to: ru
+
+max_per_category: 10
+max_deals: 40
+
+state_path: ~/re-huur-state.json
+output_path: ~/re-huur-latest.md

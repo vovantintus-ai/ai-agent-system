@@ -79,18 +79,35 @@ def run(
 
     listings, errors = collect_listings(sources)
 
-    refs = pricing.reference_prices(
-        listings, baselines=config.baselines, min_samples=config.min_samples
-    )
-
-    deals = scoring.find_deals(
-        listings,
-        refs,
-        now=now,
-        watch_terms=config.watch_terms,
-        min_discount=config.min_discount,
-        min_score=config.min_score,
-    )
+    max_price = getattr(config, "max_price", 0) or 0
+    if max_price > 0:
+        # "List everything at/under this price" mode (e.g. real estate): no
+        # discount logic — keep every priced listing at or below the cap,
+        # cheapest first.
+        matched = [l for l in listings if l.has_price() and l.price <= max_price]
+        matched.sort(key=lambda l: float(l.price))
+        deals = [
+            Deal(
+                listing=l,
+                reference_price=float(max_price),
+                discount_pct=0.0,
+                score=0.0,
+                reasons=[f"at/under {max_price:.0f} {l.currency}"],
+            )
+            for l in matched
+        ]
+    else:
+        refs = pricing.reference_prices(
+            listings, baselines=config.baselines, min_samples=config.min_samples
+        )
+        deals = scoring.find_deals(
+            listings,
+            refs,
+            now=now,
+            watch_terms=config.watch_terms,
+            min_discount=config.min_discount,
+            min_score=config.min_score,
+        )
 
     # Only surface deals we have not reported before.
     fresh = [d for d in deals if store.is_new(d.listing.id)]
