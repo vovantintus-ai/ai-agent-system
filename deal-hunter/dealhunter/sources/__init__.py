@@ -29,4 +29,13 @@ def build_source(spec: dict) -> Source:
             limit=int(spec.get("limit", 50)),
             currency=spec.get("currency", "EUR"),
         )
+    if kind == "marktplaats":
+        from .marktplaats import MarktplaatsSource
+        return MarktplaatsSource(
+            query=spec["query"],
+            category=spec.get("category", "marktplaats"),
+            limit=int(spec.get("limit", 30)),
+            currency=spec.get("currency", "EUR"),
+            user_agent=spec.get("user_agent"),
+        )
     raise ValueError(f"Unknown source type: {spec.get('type')!r}")

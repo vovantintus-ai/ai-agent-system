@@ -1,0 +1,41 @@
+# Marktplaats + free NL->RU translation config.
+#
+# IMPORTANT — run this on YOUR OWN computer (residential IP), NOT on the GitHub
+# cloud autopilot: Marktplaats blocks datacenter IPs, so the cloud run returns
+# nothing. Automated access is also a gray area under Marktplaats' terms — use
+# gently, for personal use. Phone numbers are hidden in search results and are
+# not available through this source.
+#
+# Usage on your machine:
+#   cd deal-hunter
+#   pip install -r requirements.txt
+#   python3 run.py --config config.marktplaats.yaml --print
+
+sources:
+  - type: marktplaats
+    query: "makita"          # <-- what you are hunting (e.g. "elektricien gereedschap")
+    category: tools
+    limit: 40
+
+# Show Dutch original + Russian translation (free, no Groq / no key).
+translate: true
+translate_from: nl
+translate_to: ru
+
+watch_terms:
+  - spoed          # "urgent" in Dutch
+  - nieuw          # "new"
+  - ophalen        # "pickup"
+
+# Fallback reference price for the category if there aren't enough comparable
+# priced listings to compute a median.
+baselines:
+  tools: 150
+
+min_discount: 0.20
+min_score: 20.0
+min_samples: 5
+max_deals: 20
+
+state_path: state/seen.json
+output_path: digests/latest.md

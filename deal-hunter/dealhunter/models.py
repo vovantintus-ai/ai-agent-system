@@ -19,6 +19,7 @@ class Listing:
     currency: str = "EUR"
     posted_at: Optional[str] = None  # ISO-8601 string, if known
     description: str = ""
+    location: str = ""  # city / area, when the source provides it
 
     def has_price(self) -> bool:
         return self.price is not None and self.price > 0

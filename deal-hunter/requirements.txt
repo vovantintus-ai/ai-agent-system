@@ -1,6 +1,7 @@
 # Runtime dependencies. The pure pipeline (pricing, scoring, memory, digest)
 # needs none of these; they are only used by the network source adapters and
 # YAML config loading.
-requests>=2.31        # reddit source
+requests>=2.31        # reddit / marktplaats sources
 feedparser>=6.0       # rss source
 pyyaml>=6.0           # yaml config (JSON config needs nothing)
+deep-translator>=1.11 # free NL->RU translation (no API key, no Groq)

@@ -23,6 +23,9 @@ class Config:
     max_deals: int = 25
     state_path: str = "state/seen.json"
     output_path: str = "digests/latest.md"
+    translate: bool = False          # enable free NL->RU translation in the digest
+    translate_from: str = "nl"
+    translate_to: str = "ru"
 
     @staticmethod
     def from_dict(data: dict[str, Any]) -> "Config":

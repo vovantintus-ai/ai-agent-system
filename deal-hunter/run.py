@@ -56,7 +56,18 @@ def main(argv: list[str] | None = None) -> int:
 
     store = SeenStore(config.state_path)
     now = datetime.now(timezone.utc)
-    result = run(sources, config, store, now=now)
+
+    # Free NL->RU translator (deep-translator); None if the lib/network is
+    # unavailable, in which case the digest simply shows originals only.
+    translator = None
+    if getattr(config, "translate", False):
+        from dealhunter.translate import get_translator
+        translator = get_translator(
+            source=getattr(config, "translate_from", "nl"),
+            target=getattr(config, "translate_to", "ru"),
+        )
+
+    result = run(sources, config, store, now=now, translator=translator)
     store.save()
 
     os.makedirs(os.path.dirname(config.output_path) or ".", exist_ok=True)

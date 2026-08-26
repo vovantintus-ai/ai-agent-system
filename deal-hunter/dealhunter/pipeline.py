@@ -48,6 +48,7 @@ def run(
     store: SeenStore,
     now: Optional[datetime] = None,
     clock: Callable[[], datetime] = lambda: datetime.now(timezone.utc),
+    translator: Optional[Callable[[str], str]] = None,
 ) -> RunResult:
     now = now or clock()
 
@@ -72,7 +73,8 @@ def run(
         store.mark(d.listing.id, now.isoformat())
 
     digest = render_digest(
-        new_deals, generated_at=now, limit=config.max_deals
+        new_deals, generated_at=now, limit=config.max_deals,
+        translator=translator,
     )
 
     return RunResult(
