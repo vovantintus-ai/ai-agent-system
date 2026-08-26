@@ -1,0 +1,34 @@
+name: telegram-test
+
+# One-click test: sends a message to your Telegram bot to prove delivery works.
+#
+# Use:
+#   1) Add the repo secret TELEGRAM_TOKEN (your BotFather token).
+#   2) In Telegram, open @Awtyt_Bot and press Start / send it any message.
+#   3) Actions tab -> "telegram-test" -> Run workflow.
+#   -> A test message arrives in your bot, and the log prints your chat id
+#      (save it as the TELEGRAM_CHAT_ID secret for the real alerts).
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deal-hunter
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Send Telegram test
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 telegram_test.py
