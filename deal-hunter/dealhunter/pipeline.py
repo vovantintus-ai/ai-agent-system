@@ -80,11 +80,15 @@ def run(
     listings, errors = collect_listings(sources)
 
     max_price = getattr(config, "max_price", 0) or 0
+    min_price = getattr(config, "min_price", 0) or 0
     if max_price > 0:
-        # "List everything at/under this price" mode (e.g. real estate): no
-        # discount logic — keep every priced listing at or below the cap,
-        # cheapest first.
-        matched = [l for l in listings if l.has_price() and l.price <= max_price]
+        # "List everything in this price band" mode (e.g. real estate): no
+        # discount logic — keep priced listings between min and max, cheapest
+        # first. min_price keeps rentals out of the for-sale feed.
+        matched = [
+            l for l in listings
+            if l.has_price() and min_price <= l.price <= max_price
+        ]
         matched.sort(key=lambda l: float(l.price))
         deals = [
             Deal(

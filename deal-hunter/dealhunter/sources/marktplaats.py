@@ -59,13 +59,17 @@ class MarktplaatsSource(Source):
                  limit: int = 30, currency: str = "EUR",
                  user_agent: Optional[str] = None,
                  postcode: Optional[str] = None,
-                 distance_km: Optional[int] = None):
+                 distance_km: Optional[int] = None,
+                 require_path: Optional[str] = None):
         self.query = query
         self.category = category
         self.limit = int(limit)
         self.currency = currency
         self.postcode = postcode
         self.distance_km = int(distance_km) if distance_km else None
+        # Only keep listings whose URL contains this (e.g. "huizen-en-kamers"
+        # to restrict to real estate and drop kitchens/appliances/vacation ads).
+        self.require_path = (require_path or "").lower() or None
         loc = f"@{postcode}+{distance_km}km" if postcode else ""
         self.name = f"marktplaats:{query}{loc}"
         self.user_agent = user_agent or (
@@ -99,6 +103,9 @@ class MarktplaatsSource(Source):
             city = (item.get("location") or {}).get("cityName", "") or ""
             vip = item.get("vipUrl", "") or ""
             link = vip if vip.startswith("http") else f"https://www.marktplaats.nl{vip}"
+            # Restrict to the wanted section (e.g. real estate) by URL path.
+            if self.require_path and self.require_path not in link.lower():
+                continue
             desc = (item.get("description") or "").strip()
             item_id = str(item.get("itemId") or item.get("id") or link or title)
             listings.append(

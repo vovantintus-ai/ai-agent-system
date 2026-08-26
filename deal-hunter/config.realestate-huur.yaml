@@ -1,44 +1,49 @@
 # Real estate — FOR RENT (huur): homes at/under EUR 1,500 / month.
+# ONLY the housing section (require_path: huizen-en-kamers) so kitchens,
+# appliances, thermostats and vacation ads are dropped.
 # Areas: Rotterdam (40km), Den Haag (30km), Breda (30km), Utrecht (30km).
-# Source: Marktplaats housing (partial coverage vs Funda/Pararius, which block
-# automation). Run from your phone:
 #   python3 run.py --config config.realestate-huur.yaml --telegram --print
 
 sources:
   - type: marktplaats
-    query: "huurwoning"
+    query: "woning"
+    require_path: "huizen-en-kamers"
     category: Rotterdam
     postcode: "3011"
     distance_km: 40
-    limit: 60
+    limit: 80
   - type: marktplaats
-    query: "huurwoning"
+    query: "woning"
+    require_path: "huizen-en-kamers"
     category: "Den Haag"
     postcode: "2511"
     distance_km: 30
-    limit: 60
+    limit: 80
   - type: marktplaats
-    query: "huurwoning"
+    query: "woning"
+    require_path: "huizen-en-kamers"
     category: Breda
     postcode: "4811"
     distance_km: 30
-    limit: 60
+    limit: 80
   - type: marktplaats
-    query: "huurwoning"
+    query: "woning"
+    require_path: "huizen-en-kamers"
     category: Utrecht
     postcode: "3511"
     distance_km: 30
-    limit: 60
+    limit: 80
 
-# List everything at/under this monthly rent.
+# Rent band: 300..1500 (min keeps stray tiny prices out).
+min_price: 300
 max_price: 1500
 
 translate: true
 translate_from: nl
 translate_to: ru
 
-max_per_category: 5
-max_deals: 20
+max_per_category: 6
+max_deals: 24
 
 state_path: ~/re-huur-state.json
 output_path: ~/re-huur-latest.md

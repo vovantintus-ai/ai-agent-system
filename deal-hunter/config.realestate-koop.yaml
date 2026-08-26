@@ -1,47 +1,49 @@
-# Real estate — FOR SALE (koop): apartments & houses at/under EUR 150,000.
+# Real estate — FOR SALE (koop): homes at/under EUR 150,000.
+# ONLY the housing section (require_path: huizen-en-kamers) so kitchens,
+# appliances, thermostats and vacation ads are dropped.
 # Areas: Rotterdam (40km), Den Haag (30km), Breda (30km), Utrecht (30km).
-# Source: Marktplaats housing (partial coverage vs Funda/Pararius, which block
-# automation). Run from your phone:
 #   python3 run.py --config config.realestate-koop.yaml --telegram --print
 
 sources:
   - type: marktplaats
-    query: "koopwoning"
+    query: "woning"
+    require_path: "huizen-en-kamers"
     category: Rotterdam
     postcode: "3011"
     distance_km: 40
-    limit: 60
+    limit: 80
   - type: marktplaats
-    query: "koopwoning"
+    query: "woning"
+    require_path: "huizen-en-kamers"
     category: "Den Haag"
     postcode: "2511"
     distance_km: 30
-    limit: 60
+    limit: 80
   - type: marktplaats
-    query: "koopwoning"
+    query: "woning"
+    require_path: "huizen-en-kamers"
     category: Breda
     postcode: "4811"
     distance_km: 30
-    limit: 60
+    limit: 80
   - type: marktplaats
-    query: "koopwoning"
+    query: "woning"
+    require_path: "huizen-en-kamers"
     category: Utrecht
     postcode: "3511"
     distance_km: 30
-    limit: 60
+    limit: 80
 
-# List everything at/under this price (no discount logic for real estate).
+# Sale band: 20k..150k. min_price keeps cheap rentals out of the for-sale feed.
+min_price: 20000
 max_price: 150000
 
-# Dutch original + Russian translation.
 translate: true
 translate_from: nl
 translate_to: ru
 
-# Fair space per area so one city can't crowd out the others.
-max_per_category: 5
-max_deals: 20
+max_per_category: 6
+max_deals: 24
 
-# Written outside the repo so `git pull` never conflicts.
 state_path: ~/re-koop-state.json
 output_path: ~/re-koop-latest.md
