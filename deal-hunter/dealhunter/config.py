@@ -21,6 +21,7 @@ class Config:
     min_score: float = 25.0
     min_samples: int = 3
     max_deals: int = 25
+    max_per_category: int = 0        # 0 = off; N = show up to N deals per category
     state_path: str = "state/seen.json"
     output_path: str = "digests/latest.md"
     translate: bool = False          # enable free NL->RU translation in the digest

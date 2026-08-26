@@ -37,15 +37,16 @@ watch_terms:
 
 # Fallback reference prices per category (used if too few comparable listings).
 baselines:
-  telefoons: 200
-  laptops: 300
+  telefoons: 250
+  laptops: 400
   tablets: 150
-  computers: 300
+  computers: 350
 
-min_discount: 0.20
-min_score: 20.0
+min_discount: 0.10        # a bit looser so every category yields items
+min_score: 0.0
 min_samples: 5
-max_deals: 25
+max_deals: 24
+max_per_category: 6       # show up to 6 per category (phones/laptops/tablets/computers)
 
 state_path: state/seen.json
 output_path: digests/latest.md

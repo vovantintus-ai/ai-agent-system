@@ -6,6 +6,8 @@ returned digest string, so it is straightforward to test.
 
 from __future__ import annotations
 
+import sys
+from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Callable, Optional, Sequence
@@ -16,6 +18,24 @@ from .digest import render_digest
 from .memory import SeenStore
 from .models import Deal, Listing
 from .sources.base import Source
+
+
+def balance_by_category(deals: list[Deal], per_category: int,
+                        total: int) -> list[Deal]:
+    """Give each category fair space in the digest: take up to ``per_category``
+    highest-scoring deals from each category (so a flood of cheap items in one
+    category cannot crowd the others out), capped at ``total`` overall."""
+    ordered = sorted(deals, key=lambda d: d.score, reverse=True)
+    counts: dict[str, int] = defaultdict(int)
+    out: list[Deal] = []
+    for d in ordered:
+        cat = d.listing.category
+        if counts[cat] < per_category:
+            out.append(d)
+            counts[cat] += 1
+        if len(out) >= total:
+            break
+    return out
 
 
 @dataclass
@@ -35,10 +55,15 @@ def collect_listings(
     listings: list[Listing] = []
     errors: dict[str, str] = {}
     for src in sources:
+        name = getattr(src, "name", src.__class__.__name__)
         try:
-            listings.extend(src.fetch())
+            items = list(src.fetch())
+            listings.extend(items)
+            print(f"[deal-hunter] {name}: {len(items)} listings",
+                  file=sys.stderr)
         except Exception as exc:  # noqa: BLE001 - deliberate isolation boundary
-            errors[getattr(src, "name", src.__class__.__name__)] = str(exc)
+            errors[name] = str(exc)
+            print(f"[deal-hunter] {name}: ERROR {exc}", file=sys.stderr)
     return listings, errors
 
 
@@ -68,7 +93,17 @@ def run(
     )
 
     # Only surface deals we have not reported before.
-    new_deals = [d for d in deals if store.is_new(d.listing.id)]
+    fresh = [d for d in deals if store.is_new(d.listing.id)]
+
+    # Give every category fair space so one (e.g. tablets) can't crowd out the
+    # others (phones, laptops, computers).
+    per_cat = getattr(config, "max_per_category", 0)
+    if per_cat and per_cat > 0:
+        new_deals = balance_by_category(fresh, per_cat, config.max_deals)
+    else:
+        new_deals = fresh[:config.max_deals]
+
+    # Mark only the deals we actually show, so the rest can appear next run.
     for d in new_deals:
         store.mark(d.listing.id, now.isoformat())
 
