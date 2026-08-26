@@ -7,6 +7,16 @@ from typing import Callable, Optional, Sequence
 
 from .models import Deal
 
+# Small NL->RU map for the condition field so it reads nicely without a call.
+_COND_RU = {
+    "nieuw": "новое",
+    "gebruikt": "б/у",
+    "zo goed als nieuw": "как новое",
+    "als nieuw": "как новое",
+    "nieuwstaat": "идеальное состояние",
+    "refurbished": "восстановленное",
+}
+
 
 def render_digest(
     deals: Sequence[Deal],
@@ -56,6 +66,11 @@ def render_digest(
         )
         if l.location:
             lines.append(f"- **Location:** {l.location}")
+        if getattr(l, "condition", ""):
+            ru = _COND_RU.get(l.condition.strip().lower(), "")
+            lines.append(
+                f"- **Состояние:** {l.condition}" + (f" ({ru})" if ru else "")
+            )
         lines.append(f"- **Source:** {l.source} · **Category:** {l.category}")
         if l.posted_at:
             lines.append(f"- **Posted:** {l.posted_at}")

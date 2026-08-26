@@ -30,6 +30,29 @@ except Exception:  # pragma: no cover
 
 SEARCH_URL = "https://www.marktplaats.nl/lrp/api/search"
 
+# Known Dutch condition values Marktplaats uses in listing attributes.
+_CONDITIONS = {
+    "nieuw", "gebruikt", "zo goed als nieuw", "refurbished",
+    "nieuwstaat", "als nieuw",
+}
+
+
+def _extract_condition(item: dict) -> str:
+    """Best-effort pull of the item condition (new/used) from attributes."""
+    for attrs_key in ("attributes", "extendedAttributes"):
+        for a in item.get(attrs_key) or []:
+            if not isinstance(a, dict):
+                continue
+            key = str(a.get("key", "")).lower()
+            val = str(a.get("value", "")).strip()
+            if not val:
+                continue
+            if "condit" in key or "staat" in key:
+                return val
+            if val.lower() in _CONDITIONS:
+                return val
+    return ""
+
 
 class MarktplaatsSource(Source):
     def __init__(self, query: str, category: str = "marktplaats",
@@ -79,6 +102,7 @@ class MarktplaatsSource(Source):
                     currency=self.currency,
                     posted_at=None,
                     location=city,
+                    condition=_extract_condition(item),
                     description=desc[:600],
                 )
             )

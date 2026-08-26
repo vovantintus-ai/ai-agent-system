@@ -1,0 +1,51 @@
+# Electronics deal-hunter: phones, laptops, tablets, computers.
+# Shows condition (new/used) + price + Dutch/Russian. Run from your phone
+# (Termux) so Marktplaats is not blocked:
+#   python3 run.py --config config.electronics.yaml --telegram --print
+#
+# NOTE: do NOT pass --query with this config — it has several sources, one per
+# product type. Edit the `query` lines below to fine-tune what you hunt.
+
+sources:
+  - type: marktplaats
+    query: "telefoon"        # phones
+    category: telefoons
+    limit: 40
+  - type: marktplaats
+    query: "laptop"          # laptops / notebooks
+    category: laptops
+    limit: 40
+  - type: marktplaats
+    query: "tablet"          # tablets
+    category: tablets
+    limit: 40
+  - type: marktplaats
+    query: "computer"        # desktop computers
+    category: computers
+    limit: 40
+
+# Dutch original + Russian translation (free, no key).
+translate: true
+translate_from: nl
+translate_to: ru
+
+# Show both old and new — condition is displayed, not filtered.
+watch_terms:
+  - nieuw            # new
+  - nieuwstaat       # mint
+  - spoed            # urgent
+
+# Fallback reference prices per category (used if too few comparable listings).
+baselines:
+  telefoons: 200
+  laptops: 300
+  tablets: 150
+  computers: 300
+
+min_discount: 0.20
+min_score: 20.0
+min_samples: 5
+max_deals: 25
+
+state_path: state/seen.json
+output_path: digests/latest.md
