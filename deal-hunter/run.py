@@ -32,6 +32,9 @@ def main(argv: list[str] | None = None) -> int:
                         help="Override digest output path")
     parser.add_argument("--print", action="store_true",
                         help="Also print the digest to stdout")
+    parser.add_argument("--telegram", action="store_true",
+                        help="Send the digest to Telegram (reads TELEGRAM_TOKEN "
+                             "and TELEGRAM_CHAT_ID from the environment)")
     args = parser.parse_args(argv)
 
     try:
@@ -76,6 +79,24 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.print:
         print(result.digest_markdown)
+
+    # Optional: push the digest straight to Telegram (used on a phone via Termux).
+    if args.telegram:
+        tg_token = os.environ.get("TELEGRAM_TOKEN", "").strip()
+        tg_chat = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+        if not tg_token or not tg_chat:
+            print("[deal-hunter] --telegram set but TELEGRAM_TOKEN / "
+                  "TELEGRAM_CHAT_ID env vars are missing", file=sys.stderr)
+        elif not result.new_deals:
+            print("[deal-hunter] no new deals — nothing sent to Telegram")
+        else:
+            from dealhunter.notify_telegram import send
+            try:
+                n = send(tg_token, tg_chat, result.digest_markdown)
+                print(f"[deal-hunter] sent {n} Telegram message(s)")
+            except Exception as exc:  # noqa: BLE001
+                print(f"[deal-hunter] Telegram send failed: {exc}",
+                      file=sys.stderr)
 
     err_note = ""
     if result.source_errors:
