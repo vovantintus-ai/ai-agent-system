@@ -37,8 +37,8 @@ translate: true
 translate_from: nl
 translate_to: ru
 
-max_per_category: 10
-max_deals: 40
+max_per_category: 5
+max_deals: 20
 
 state_path: ~/re-huur-state.json
 output_path: ~/re-huur-latest.md

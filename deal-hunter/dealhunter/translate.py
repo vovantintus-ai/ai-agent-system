@@ -23,14 +23,22 @@ def get_translator(source: str = "nl", target: str = "ru") -> Optional[Callable[
     except Exception:
         return None
 
+    import time
+
     def translate(text: str) -> str:
         text = (text or "").strip()
         if not text:
             return ""
-        try:
-            # deep-translator caps a single call around 5000 chars.
-            return engine.translate(text[:4800]) or ""
-        except Exception:
-            return ""  # fail soft — never break the run over a translation
+        # One retry with a short pause — the free endpoint rate-limits when many
+        # calls come in a row.
+        for attempt in range(2):
+            try:
+                return engine.translate(text[:4800]) or ""
+            except Exception:
+                if attempt == 0:
+                    time.sleep(1.5)
+                else:
+                    return ""  # fail soft — never break the run
+        return ""
 
     return translate

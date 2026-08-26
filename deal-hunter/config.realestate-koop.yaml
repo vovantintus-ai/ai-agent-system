@@ -39,8 +39,8 @@ translate_from: nl
 translate_to: ru
 
 # Fair space per area so one city can't crowd out the others.
-max_per_category: 10
-max_deals: 40
+max_per_category: 5
+max_deals: 20
 
 # Written outside the repo so `git pull` never conflicts.
 state_path: ~/re-koop-state.json
