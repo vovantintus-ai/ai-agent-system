@@ -1,5 +1,5 @@
 # Deal Hunter — daily digest
 
-_Generated 2026-08-27 05:57 UTC_
+_Generated 2026-08-27 06:09 UTC_
 
 No new under-priced listings cleared the thresholds this run. That is normal on quiet days — the agent will keep watching.
