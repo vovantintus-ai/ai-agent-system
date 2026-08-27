@@ -61,7 +61,8 @@ class MarktplaatsSource(Source):
                  postcode: Optional[str] = None,
                  distance_km: Optional[int] = None,
                  require_path: Optional[str] = None,
-                 exclude_paths: Optional[list] = None):
+                 exclude_paths: Optional[list] = None,
+                 exclude_title: Optional[list] = None):
         self.query = query
         self.category = category
         self.limit = int(limit)
@@ -73,6 +74,8 @@ class MarktplaatsSource(Source):
         self.require_path = (require_path or "").lower() or None
         # Drop listings whose URL contains ANY of these (garages, land, etc.).
         self.exclude_paths = [p.lower() for p in (exclude_paths or []) if p]
+        # Drop listings whose TITLE contains ANY of these (student, gezocht…).
+        self.exclude_title = [t.lower() for t in (exclude_title or []) if t]
         loc = f"@{postcode}+{distance_km}km" if postcode else ""
         self.name = f"marktplaats:{query}{loc}"
         self.user_agent = user_agent or (
@@ -112,6 +115,10 @@ class MarktplaatsSource(Source):
                 continue
             # Drop explicitly-unwanted sub-sections (garages, land, vacation…).
             if any(bad in low for bad in self.exclude_paths):
+                continue
+            # Drop by unwanted title words (student, temporary, wanted ads…).
+            tl = title.lower()
+            if any(bad in tl for bad in self.exclude_title):
                 continue
             desc = (item.get("description") or "").strip()
             item_id = str(item.get("itemId") or item.get("id") or link or title)

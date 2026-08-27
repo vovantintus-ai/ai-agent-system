@@ -1,11 +1,11 @@
-# Real estate — FOR RENT (huur): homes at/under EUR 1,500 / month.
-# ONLY the housing section (require_path: huizen-en-kamers) so kitchens,
-# appliances, thermostats and vacation ads are dropped.
-# Areas: Rotterdam (40km), Den Haag (30km), Breda (30km), Utrecht (30km).
+# Real estate — apartments/houses FOR RENT, at/under EUR 1,500 / month.
+# Only rentals (require_path: te-huur), no rooms / temporary / exchange /
+# student ads. Areas: Rotterdam (40km), Den Haag (30km), Breda (30km),
+# Utrecht (30km).
 #   python3 run.py --config config.realestate-huur.yaml --telegram --print
 
-_exclude: &exclude
-  - kamers-te-huur   # room-rental subcategory, full of furniture junk
+_exclude_paths: &exclude_paths
+  - kamers-te-huur      # room rentals (furniture junk lives here)
   - garages
   - parkeer
   - grond
@@ -17,47 +17,62 @@ _exclude: &exclude
   - ligplaats
   - opslag
   - bedrijfs
-  - keuken
-  - thermostaten
-  - huis-en-inrichting
-  - doe-het-zelf
+  - woningruil          # home exchange
+  - anti-kraak
+  - antikraak
+
+_exclude_title: &exclude_title
+  - student
+  - gezocht             # people SEEKING a home, not offering
+  - tijdelijk           # temporary
+  - vakantie
+  - woningruil
+  - anti-kraak
+  - antikraak
+  - anti kraak
+  - kamer te huur       # single room
+  - te koop             # for sale leaking into rent
 
 sources:
   - type: marktplaats
-    query: "woning"
-    require_path: "huizen-en-kamers"
-    exclude_paths: *exclude
+    query: "appartement te huur"
+    require_path: "te-huur"
+    exclude_paths: *exclude_paths
+    exclude_title: *exclude_title
     category: Rotterdam
     postcode: "3011"
     distance_km: 40
     limit: 80
   - type: marktplaats
-    query: "woning"
-    require_path: "huizen-en-kamers"
-    exclude_paths: *exclude
+    query: "appartement te huur"
+    require_path: "te-huur"
+    exclude_paths: *exclude_paths
+    exclude_title: *exclude_title
     category: "Den Haag"
     postcode: "2511"
     distance_km: 30
     limit: 80
   - type: marktplaats
-    query: "woning"
-    require_path: "huizen-en-kamers"
-    exclude_paths: *exclude
+    query: "appartement te huur"
+    require_path: "te-huur"
+    exclude_paths: *exclude_paths
+    exclude_title: *exclude_title
     category: Breda
     postcode: "4811"
     distance_km: 30
     limit: 80
   - type: marktplaats
-    query: "woning"
-    require_path: "huizen-en-kamers"
-    exclude_paths: *exclude
+    query: "appartement te huur"
+    require_path: "te-huur"
+    exclude_paths: *exclude_paths
+    exclude_title: *exclude_title
     category: Utrecht
     postcode: "3511"
     distance_km: 30
     limit: 80
 
-# Rent band: 300..1500 (min keeps stray tiny prices out).
-min_price: 300
+# Rent band: 500..1500 (min keeps furniture/deposit noise out).
+min_price: 500
 max_price: 1500
 
 translate: true
