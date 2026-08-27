@@ -23,6 +23,8 @@ echo "[auto] real-estate loop started; interval ${INTERVAL}s. Ctrl-C to stop."
 while true; do
   echo "[auto] running apartment-rental search"
   python run.py --config config.realestate-huur.yaml --telegram
+  # Also push the digest to GitHub so it can be reviewed remotely.
+  bash report_to_github.sh || true
   echo "[auto] sleeping ${INTERVAL}s..."
   sleep "$INTERVAL"
 done
