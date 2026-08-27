@@ -42,5 +42,6 @@ def build_source(spec: dict) -> Source:
             require_path=spec.get("require_path"),
             exclude_paths=spec.get("exclude_paths"),
             exclude_title=spec.get("exclude_title"),
+            require_title_any=spec.get("require_title_any"),
         )
     raise ValueError(f"Unknown source type: {spec.get('type')!r}")

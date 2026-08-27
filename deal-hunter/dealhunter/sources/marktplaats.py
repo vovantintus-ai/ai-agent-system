@@ -83,7 +83,8 @@ class MarktplaatsSource(Source):
                  distance_km: Optional[int] = None,
                  require_path: Optional[str] = None,
                  exclude_paths: Optional[list] = None,
-                 exclude_title: Optional[list] = None):
+                 exclude_title: Optional[list] = None,
+                 require_title_any: Optional[list] = None):
         self.query = query
         self.category = category
         self.limit = int(limit)
@@ -97,6 +98,9 @@ class MarktplaatsSource(Source):
         self.exclude_paths = [p.lower() for p in (exclude_paths or []) if p]
         # Drop listings whose TITLE contains ANY of these (student, gezocht…).
         self.exclude_title = [t.lower() for t in (exclude_title or []) if t]
+        # If set, KEEP only listings whose title contains one of these (e.g.
+        # "gezocht" to keep demand/wanted ads and drop service offers).
+        self.require_title_any = [t.lower() for t in (require_title_any or []) if t]
         loc = f"@{postcode}+{distance_km}km" if postcode else ""
         self.name = f"marktplaats:{query}{loc}"
         self.user_agent = user_agent or (
@@ -140,6 +144,10 @@ class MarktplaatsSource(Source):
             # Drop by unwanted title words (student, temporary, wanted ads…).
             tl = title.lower()
             if any(bad in tl for bad in self.exclude_title):
+                continue
+            # Keep only demand ads if a required-title list is set.
+            if self.require_title_any and not any(
+                    good in tl for good in self.require_title_any):
                 continue
             desc = (item.get("description") or "").strip()
             item_id = str(item.get("itemId") or item.get("id") or link or title)
