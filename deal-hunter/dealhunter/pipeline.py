@@ -97,8 +97,9 @@ def run(
                   f"sample of {len(listings)} fetched:", file=sys.stderr)
             for l in listings[:8]:
                 p = f"{l.price:.0f}" if l.has_price() else "no-price"
-                print(f"[deal-hunter]   {p} {l.currency} | {l.title[:45]}",
-                      file=sys.stderr)
+                path = l.url.replace("https://www.marktplaats.nl", "")
+                print(f"[deal-hunter]   {p} {l.currency} | "
+                      f"{l.title[:28]} | {path[:60]}", file=sys.stderr)
         deals = [
             Deal(
                 listing=l,
