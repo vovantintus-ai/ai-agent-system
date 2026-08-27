@@ -40,5 +40,6 @@ def build_source(spec: dict) -> Source:
             postcode=spec.get("postcode"),
             distance_km=spec.get("distance_km"),
             require_path=spec.get("require_path"),
+            exclude_paths=spec.get("exclude_paths"),
         )
     raise ValueError(f"Unknown source type: {spec.get('type')!r}")

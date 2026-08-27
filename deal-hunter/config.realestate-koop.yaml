@@ -4,10 +4,30 @@
 # Areas: Rotterdam (40km), Den Haag (30km), Breda (30km), Utrecht (30km).
 #   python3 run.py --config config.realestate-koop.yaml --telegram --print
 
+# Sub-sections to drop even inside the housing section (garages, land,
+# vacation/recreation, moorings, storage, and any stray non-home ads).
+_exclude: &exclude
+  - garages
+  - parkeer
+  - grond
+  - kavel
+  - recreatie
+  - stacaravan
+  - chalet
+  - vakantie
+  - ligplaats
+  - opslag
+  - bedrijfs
+  - keuken
+  - thermostaten
+  - huis-en-inrichting
+  - doe-het-zelf
+
 sources:
   - type: marktplaats
     query: "woning"
     require_path: "huizen-en-kamers"
+    exclude_paths: *exclude
     category: Rotterdam
     postcode: "3011"
     distance_km: 40
@@ -15,6 +35,7 @@ sources:
   - type: marktplaats
     query: "woning"
     require_path: "huizen-en-kamers"
+    exclude_paths: *exclude
     category: "Den Haag"
     postcode: "2511"
     distance_km: 30
@@ -22,6 +43,7 @@ sources:
   - type: marktplaats
     query: "woning"
     require_path: "huizen-en-kamers"
+    exclude_paths: *exclude
     category: Breda
     postcode: "4811"
     distance_km: 30
@@ -29,6 +51,7 @@ sources:
   - type: marktplaats
     query: "woning"
     require_path: "huizen-en-kamers"
+    exclude_paths: *exclude
     category: Utrecht
     postcode: "3511"
     distance_km: 30

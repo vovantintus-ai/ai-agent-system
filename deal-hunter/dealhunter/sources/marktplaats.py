@@ -60,7 +60,8 @@ class MarktplaatsSource(Source):
                  user_agent: Optional[str] = None,
                  postcode: Optional[str] = None,
                  distance_km: Optional[int] = None,
-                 require_path: Optional[str] = None):
+                 require_path: Optional[str] = None,
+                 exclude_paths: Optional[list] = None):
         self.query = query
         self.category = category
         self.limit = int(limit)
@@ -70,6 +71,8 @@ class MarktplaatsSource(Source):
         # Only keep listings whose URL contains this (e.g. "huizen-en-kamers"
         # to restrict to real estate and drop kitchens/appliances/vacation ads).
         self.require_path = (require_path or "").lower() or None
+        # Drop listings whose URL contains ANY of these (garages, land, etc.).
+        self.exclude_paths = [p.lower() for p in (exclude_paths or []) if p]
         loc = f"@{postcode}+{distance_km}km" if postcode else ""
         self.name = f"marktplaats:{query}{loc}"
         self.user_agent = user_agent or (
@@ -103,8 +106,12 @@ class MarktplaatsSource(Source):
             city = (item.get("location") or {}).get("cityName", "") or ""
             vip = item.get("vipUrl", "") or ""
             link = vip if vip.startswith("http") else f"https://www.marktplaats.nl{vip}"
+            low = link.lower()
             # Restrict to the wanted section (e.g. real estate) by URL path.
-            if self.require_path and self.require_path not in link.lower():
+            if self.require_path and self.require_path not in low:
+                continue
+            # Drop explicitly-unwanted sub-sections (garages, land, vacation…).
+            if any(bad in low for bad in self.exclude_paths):
                 continue
             desc = (item.get("description") or "").strip()
             item_id = str(item.get("itemId") or item.get("id") or link or title)
