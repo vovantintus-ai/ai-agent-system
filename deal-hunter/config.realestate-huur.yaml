@@ -36,7 +36,7 @@ _exclude_title: &exclude_title
 sources:
   - type: marktplaats
     query: "appartement te huur"
-    require_path: "te-huur"
+    require_path: "huizen-te-huur"
     exclude_paths: *exclude_paths
     exclude_title: *exclude_title
     category: Rotterdam
@@ -45,7 +45,7 @@ sources:
     limit: 80
   - type: marktplaats
     query: "appartement te huur"
-    require_path: "te-huur"
+    require_path: "huizen-te-huur"
     exclude_paths: *exclude_paths
     exclude_title: *exclude_title
     category: "Den Haag"
@@ -54,7 +54,7 @@ sources:
     limit: 80
   - type: marktplaats
     query: "appartement te huur"
-    require_path: "te-huur"
+    require_path: "huizen-te-huur"
     exclude_paths: *exclude_paths
     exclude_title: *exclude_title
     category: Breda
@@ -63,7 +63,7 @@ sources:
     limit: 80
   - type: marktplaats
     query: "appartement te huur"
-    require_path: "te-huur"
+    require_path: "huizen-te-huur"
     exclude_paths: *exclude_paths
     exclude_title: *exclude_title
     category: Utrecht
