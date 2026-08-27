@@ -21,6 +21,25 @@ _common: &common
     - nodig
     - "zoek iemand"
     - "hulp gezocht"
+  # ...but drop the ones that are actually SERVICE OFFERS using "gezocht?" as
+  # a marketing hook (tradespeople advertising themselves).
+  exclude_title: &offers
+    - "zoek niet verder"
+    - "niet verder"
+    - beschikbaar
+    - vrijblijvend
+    - offerte
+    - ervaring
+    - specialist
+    - vakman
+    - allround
+    - "wij bieden"
+    - "wij zijn"
+    - "ik ben"
+    - "ik zoek werk"
+    - aangeboden
+    - "scherpe prijs"
+    - "beste prijs"
 
 sources:
   - { type: marktplaats, query: "elektricien gezocht",      category: "Электрика",       <<: *common }
