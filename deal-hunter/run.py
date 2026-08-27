@@ -38,6 +38,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--query", default=None,
                         help="Override the search query for marktplaats/rss/"
                              "reddit sources (handy on a phone — no file edit)")
+    parser.add_argument("--photos", action="store_true",
+                        help="Send each listing to Telegram as a photo + "
+                             "caption instead of one text digest")
     args = parser.parse_args(argv)
 
     try:
@@ -105,10 +108,16 @@ def main(argv: list[str] | None = None) -> int:
         elif not result.new_deals:
             print("[deal-hunter] no new deals — nothing sent to Telegram")
         else:
-            from dealhunter.notify_telegram import send
             try:
-                n = send(tg_token, tg_chat, result.digest_markdown)
-                print(f"[deal-hunter] sent {n} Telegram message(s)")
+                if args.photos:
+                    from dealhunter.notify_telegram import send_deals_as_photos
+                    n = send_deals_as_photos(tg_token, tg_chat,
+                                             result.new_deals, translator)
+                    print(f"[deal-hunter] sent {n} Telegram photo(s)")
+                else:
+                    from dealhunter.notify_telegram import send
+                    n = send(tg_token, tg_chat, result.digest_markdown)
+                    print(f"[deal-hunter] sent {n} Telegram message(s)")
             except Exception as exc:  # noqa: BLE001
                 print(f"[deal-hunter] Telegram send failed: {exc}",
                       file=sys.stderr)

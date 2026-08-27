@@ -21,6 +21,7 @@ class Listing:
     description: str = ""
     location: str = ""  # city / area, when the source provides it
     condition: str = ""  # e.g. "Nieuw" / "Gebruikt", when the source provides it
+    image_url: str = ""  # first listing photo, when the source provides it
 
     def has_price(self) -> bool:
         return self.price is not None and self.price > 0

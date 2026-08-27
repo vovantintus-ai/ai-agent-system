@@ -37,6 +37,27 @@ _CONDITIONS = {
 }
 
 
+def _extract_image(item: dict) -> str:
+    """Best-effort first photo URL from a listing."""
+    pics = item.get("pictures") or item.get("imageUrls") or []
+    if isinstance(pics, list) and pics:
+        p = pics[0]
+        if isinstance(p, str):
+            url = p
+        elif isinstance(p, dict):
+            url = ""
+            for k in ("extraExtraLargeUrl", "largeUrl", "mediumUrl",
+                      "url", "extraSmallUrl"):
+                if p.get(k):
+                    url = p[k]
+                    break
+        else:
+            url = ""
+        if url:
+            return url if url.startswith("http") else "https:" + url
+    return ""
+
+
 def _extract_condition(item: dict) -> str:
     """Best-effort pull of the item condition (new/used) from attributes."""
     for attrs_key in ("attributes", "extendedAttributes"):
@@ -134,6 +155,7 @@ class MarktplaatsSource(Source):
                     posted_at=None,
                     location=city,
                     condition=_extract_condition(item),
+                    image_url=_extract_image(item),
                     description=desc[:600],
                 )
             )
