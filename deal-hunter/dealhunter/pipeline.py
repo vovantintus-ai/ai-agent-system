@@ -81,7 +81,14 @@ def run(
 
     max_price = getattr(config, "max_price", 0) or 0
     min_price = getattr(config, "min_price", 0) or 0
-    if max_price > 0:
+    if getattr(config, "list_all", False):
+        # Jobs/leads mode: list every fetched item, price is not the criterion.
+        deals = [
+            Deal(listing=l, reference_price=0.0, discount_pct=0.0,
+                 score=0.0, reasons=["заказ/вакансия"])
+            for l in listings
+        ]
+    elif max_price > 0:
         # "List everything in this price band" mode (e.g. real estate): no
         # discount logic — keep priced listings between min and max, cheapest
         # first. min_price keeps rentals out of the for-sale feed.

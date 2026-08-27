@@ -1,0 +1,33 @@
+# Jobs / leads: people looking for a tradesperson (electrical, plumbing,
+# renovation, bathrooms, flooring, windows/doors, cameras, waterproofing).
+# Region around Rotterdam (50km covers Den Haag / Breda / Utrecht too).
+# Grouped by trade. Red-flag warnings are added in the caption.
+#   python3 run.py --config config.jobs.yaml --telegram --photos --print
+
+_common: &common
+  postcode: "3011"
+  distance_km: 50
+  limit: 40
+
+sources:
+  - { type: marktplaats, query: "elektricien gezocht",  category: "Электрика",     <<: *common }
+  - { type: marktplaats, query: "loodgieter gezocht",   category: "Сантехника",    <<: *common }
+  - { type: marktplaats, query: "klusjesman gezocht",   category: "Мастер/ремонт", <<: *common }
+  - { type: marktplaats, query: "verbouwing",           category: "Ремонт под ключ", <<: *common }
+  - { type: marktplaats, query: "badkamer renoveren",   category: "Ванные",        <<: *common }
+  - { type: marktplaats, query: "laminaat leggen",      category: "Ламинат/полы",  <<: *common }
+  - { type: marktplaats, query: "kozijnen plaatsen",    category: "Окна/двери",    <<: *common }
+  - { type: marktplaats, query: "camerabeveiliging",    category: "Камеры",        <<: *common }
+
+# Jobs mode: list every matching ad (price is not the criterion).
+list_all: true
+
+translate: true
+translate_from: nl
+translate_to: ru
+
+max_per_category: 6
+max_deals: 48
+
+state_path: ~/re-jobs-state.json
+output_path: ~/re-jobs-latest.md

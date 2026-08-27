@@ -105,6 +105,14 @@ def send_deals_as_photos(token: str, chat_id: str, deals,
             if l.condition:
                 meta += f" · {l.condition}"
             lines.append(meta)
+            # Scam red flags (heuristic warning, not proof).
+            try:
+                from .redflags import scan
+                flags = scan(l.title, l.description)
+            except Exception:
+                flags = []
+            if flags:
+                lines.append("⚠️ Осторожно: " + "; ".join(flags))
             lines.append(l.url)
             caption = "\n".join(lines)
             if l.image_url:
