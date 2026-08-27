@@ -5,6 +5,7 @@
 #   python3 run.py --config config.realestate-huur.yaml --telegram --print
 
 _exclude: &exclude
+  - kamers-te-huur   # room-rental subcategory, full of furniture junk
   - garages
   - parkeer
   - grond
