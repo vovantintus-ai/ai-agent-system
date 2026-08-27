@@ -21,8 +21,7 @@ termux-wake-lock 2>/dev/null || true
 echo "[auto] real-estate loop started; interval ${INTERVAL}s. Ctrl-C to stop."
 
 while true; do
-  echo "[auto] $(cat /proc/uptime 2>/dev/null | cut -d' ' -f1) — running sale + rent"
-  python run.py --config config.realestate-koop.yaml --telegram
+  echo "[auto] running apartment-rental search"
   python run.py --config config.realestate-huur.yaml --telegram
   echo "[auto] sleeping ${INTERVAL}s..."
   sleep "$INTERVAL"
