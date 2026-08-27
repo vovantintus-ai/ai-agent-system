@@ -123,6 +123,16 @@ def run(
             min_score=config.min_score,
         )
 
+    # Deduplicate within this run: overlapping city radii return the same
+    # listing several times, so keep only the first occurrence of each id.
+    _seen_ids: set = set()
+    unique: list[Deal] = []
+    for d in deals:
+        if d.listing.id not in _seen_ids:
+            _seen_ids.add(d.listing.id)
+            unique.append(d)
+    deals = unique
+
     # Only surface deals we have not reported before.
     fresh = [d for d in deals if store.is_new(d.listing.id)]
 
