@@ -77,29 +77,40 @@ def send_photo(token: str, chat_id: str, photo_url: str, caption: str) -> bool:
 
 def send_deals_as_photos(token: str, chat_id: str, deals,
                          translator=None) -> int:
-    """Send each deal as a photo + caption (title, RU translation, price,
-    location, link). Returns how many were sent."""
-    sent = 0
+    """Send each deal as a photo + caption, GROUPED BY CITY. Before each city's
+    listings a header message is sent so the cities are clearly separated."""
+    from collections import OrderedDict
+
+    groups: "OrderedDict[str, list]" = OrderedDict()
     for d in deals:
-        l = d.listing
-        price = f"{l.price:.0f} {l.currency}" if l.has_price() else "n/a"
-        lines = [l.title]
-        if translator:
-            ru = translator(l.title)
-            if ru and ru.strip().lower() != l.title.strip().lower():
-                lines.append("🇷🇺 " + ru)
-        meta = f"💶 {price}"
-        if l.location:
-            meta += f" · 📍 {l.location}"
-        if l.condition:
-            meta += f" · {l.condition}"
-        lines.append(meta)
-        lines.append(l.url)
-        caption = "\n".join(lines)
-        if l.image_url:
-            ok = send_photo(token, chat_id, l.image_url, caption)
-        else:
-            ok = send(token, chat_id, caption) > 0
-        if ok:
-            sent += 1
+        city = d.listing.category or "Overig"
+        groups.setdefault(city, []).append(d)
+
+    sent = 0
+    for city, items in groups.items():
+        # City separator header.
+        send(token, chat_id,
+             f"━━━━━━━━━━\n🏙 {city.upper()} — {len(items)}\n━━━━━━━━━━")
+        for d in items:
+            l = d.listing
+            price = f"{l.price:.0f} {l.currency}" if l.has_price() else "n/a"
+            lines = [l.title]
+            if translator:
+                ru = translator(l.title)
+                if ru and ru.strip().lower() != l.title.strip().lower():
+                    lines.append("🇷🇺 " + ru)
+            meta = f"💶 {price}"
+            if l.location:
+                meta += f" · 📍 {l.location}"
+            if l.condition:
+                meta += f" · {l.condition}"
+            lines.append(meta)
+            lines.append(l.url)
+            caption = "\n".join(lines)
+            if l.image_url:
+                ok = send_photo(token, chat_id, l.image_url, caption)
+            else:
+                ok = send(token, chat_id, caption) > 0
+            if ok:
+                sent += 1
     return sent
