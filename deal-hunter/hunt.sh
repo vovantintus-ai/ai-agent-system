@@ -10,13 +10,15 @@ CHOICE="$1"
 if [ -z "$CHOICE" ]; then
   echo "Что искать?"
   echo "  1 = Квартиры (аренда)"
-  echo "  2 = Работа (заказы)"
-  printf "Выбор [1/2]: "
+  echo "  2 = Работа — Marktplaats (vacatures)"
+  echo "  3 = Работа — Indeed.nl"
+  printf "Выбор [1/2/3]: "
   read -r CHOICE
 fi
 
 case "$CHOICE" in
   1) python run.py --config config.realestate-huur.yaml --telegram --photos --print ;;
   2) python run.py --config config.jobs.yaml --telegram --photos --print ;;
-  *) echo "Введите 1 или 2." ; exit 1 ;;
+  3) python run.py --config config.jobs-indeed.yaml --telegram --print ;;
+  *) echo "Введите 1, 2 или 3." ; exit 1 ;;
 esac

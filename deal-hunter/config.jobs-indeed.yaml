@@ -1,0 +1,28 @@
+# Job vacancies from Indeed.nl (RSS), for the trades you care about, around
+# Rotterdam (radius 50km covers Den Haag / Breda / Utrecht too). Grouped by
+# trade, translated to Russian, direct link to each vacancy.
+#   python3 run.py --config config.jobs-indeed.yaml --telegram --print
+#
+# NOTE: Indeed sometimes changes/limits its RSS. If a source returns 0 we
+# switch to another job board. Indeed RSS has no photos, so these come as text.
+
+sources:
+  - { type: rss, category: "Электрика",   url: "https://nl.indeed.com/rss?q=elektricien&l=Rotterdam&radius=50" }
+  - { type: rss, category: "Сантехника",  url: "https://nl.indeed.com/rss?q=loodgieter&l=Rotterdam&radius=50" }
+  - { type: rss, category: "Монтаж",      url: "https://nl.indeed.com/rss?q=installateur&l=Rotterdam&radius=50" }
+  - { type: rss, category: "Монтажник",   url: "https://nl.indeed.com/rss?q=monteur&l=Rotterdam&radius=50" }
+  - { type: rss, category: "Плотник",     url: "https://nl.indeed.com/rss?q=timmerman&l=Rotterdam&radius=50" }
+  - { type: rss, category: "Отопление",   url: "https://nl.indeed.com/rss?q=cv+monteur&l=Rotterdam&radius=50" }
+  - { type: rss, category: "Ванные/ремонт", url: "https://nl.indeed.com/rss?q=badkamer&l=Rotterdam&radius=50" }
+
+list_all: true
+
+translate: true
+translate_from: nl
+translate_to: ru
+
+max_per_category: 8
+max_deals: 60
+
+state_path: ~/re-jobs-indeed-state.json
+output_path: ~/re-jobs-indeed-latest.md
