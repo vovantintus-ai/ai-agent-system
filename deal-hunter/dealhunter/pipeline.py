@@ -90,6 +90,15 @@ def run(
             if l.has_price() and min_price <= l.price <= max_price
         ]
         matched.sort(key=lambda l: float(l.price))
+        # Diagnosis: if nothing fell in the band, show a sample of what came
+        # back (real price or "no-price") so we can see why.
+        if not matched and listings:
+            print(f"[deal-hunter] 0 in band {min_price:.0f}-{max_price:.0f}; "
+                  f"sample of {len(listings)} fetched:", file=sys.stderr)
+            for l in listings[:8]:
+                p = f"{l.price:.0f}" if l.has_price() else "no-price"
+                print(f"[deal-hunter]   {p} {l.currency} | {l.title[:45]}",
+                      file=sys.stderr)
         deals = [
             Deal(
                 listing=l,
