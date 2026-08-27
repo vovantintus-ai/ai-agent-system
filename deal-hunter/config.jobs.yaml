@@ -1,55 +1,23 @@
-# Jobs / leads: only DEMAND ads — people LOOKING FOR a tradesperson
-# (not companies offering services, not products, not garages/storage).
-# Region around Rotterdam (50km). Grouped by trade. Red-flag warnings added.
+# Job vacancies: real employment openings from employers (Marktplaats
+# "Vacatures" section) in the trades you care about. Region around Rotterdam
+# (50km). Grouped by trade.
 #   python3 run.py --config config.jobs.yaml --telegram --photos --print
-#
-# NOTE: Marktplaats is mostly SUPPLY (tradespeople advertising). Real client
-# job posts live on Werkspot. So expect FEW results here — but they are real.
 
 _common: &common
   postcode: "3011"
   distance_km: 50
   limit: 40
-  require_path: "diensten-en-vakmensen"   # trades section only (no garages/auto/storage)
-  # Keep only ads where someone is LOOKING for help:
-  require_title_any: &demand
-    - gezocht
-    - gevraagd
-    - "op zoek"
-    - "wie kan"
-    - "wie wil"
-    - nodig
-    - "zoek iemand"
-    - "hulp gezocht"
-  # ...but drop the ones that are actually SERVICE OFFERS using "gezocht?" as
-  # a marketing hook (tradespeople advertising themselves).
-  exclude_title: &offers
-    - "zoek niet verder"
-    - "niet verder"
-    - beschikbaar
-    - vrijblijvend
-    - offerte
-    - ervaring
-    - specialist
-    - vakman
-    - allround
-    - "wij bieden"
-    - "wij zijn"
-    - "ik ben"
-    - "ik zoek werk"
-    - aangeboden
-    - "scherpe prijs"
-    - "beste prijs"
+  require_path: "vacatures"    # job-vacancy section only (real openings)
 
 sources:
-  - { type: marktplaats, query: "elektricien gezocht",      category: "Электрика",       <<: *common }
-  - { type: marktplaats, query: "loodgieter gezocht",       category: "Сантехника",      <<: *common }
-  - { type: marktplaats, query: "klusjesman gezocht",       category: "Мастер/ремонт",   <<: *common }
-  - { type: marktplaats, query: "verbouwing gezocht",       category: "Ремонт под ключ", <<: *common }
-  - { type: marktplaats, query: "badkamer gezocht",         category: "Ванные",          <<: *common }
-  - { type: marktplaats, query: "laminaat gezocht",         category: "Ламинат/полы",    <<: *common }
-  - { type: marktplaats, query: "kozijnen gezocht",         category: "Окна/двери",      <<: *common }
-  - { type: marktplaats, query: "camera installateur gezocht", category: "Камеры",       <<: *common }
+  - { type: marktplaats, query: "elektricien",  category: "Электрика",        <<: *common }
+  - { type: marktplaats, query: "loodgieter",   category: "Сантехника",       <<: *common }
+  - { type: marktplaats, query: "installateur", category: "Монтаж/установка",  <<: *common }
+  - { type: marktplaats, query: "monteur",      category: "Монтажник",        <<: *common }
+  - { type: marktplaats, query: "timmerman",    category: "Плотник",          <<: *common }
+  - { type: marktplaats, query: "cv monteur",   category: "Отопление",        <<: *common }
+  - { type: marktplaats, query: "badkamer",     category: "Ванные/ремонт",    <<: *common }
+  - { type: marktplaats, query: "onderhoudsmonteur", category: "Обслуживание", <<: *common }
 
 list_all: true
 
